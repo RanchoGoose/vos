@@ -1,0 +1,42 @@
+Namespace(test_bs=200, num_to_avg=10, validate=False, use_xent=False, method_name='cifar10_wrn_baseline_0.1_1000_40_1_10000', layers=40, widen_factor=2, droprate=0.3, MC_dropout_enabled='true', dropout_runs=10, load='./snapshots/dropout', ngpu=1, prefetch=2, out_as_pos=False, score='energy', T=1.0, noise=0, model_name='res')
+Model restored! Epoch: 99
+Error Rate 7.52
+
+Using CIFAR-10 as typical data
+
+
+Error Detection
+			cifar10_wrn_baseline_0.1_1000_40_1_10000
+FPR95:			26.07
+AUROC:			91.49
+AUPR:			45.19
+
+
+Texture Detection
+[-13.353505 -11.22898  -10.177257] [-8.722419  -6.2432117 -3.6374931]
+				cifar10_wrn_baseline_0.1_1000_40_1_10000
+  FPR95 AUROC AUPR
+& 65.72 & 83.97 & 95.19
+& 0.52 & 0.24 & 0.12
+
+
+SVHN Detection
+[-13.353505 -11.22898  -10.177257] [-3.2330716 -7.0381074 -4.286116 ]
+				cifar10_wrn_baseline_0.1_1000_40_1_10000
+  FPR95 AUROC AUPR
+& 55.80 & 90.05 & 97.76
+& 0.91 & 0.20 & 0.08
+
+
+Places365 Detection
+[-13.353505 -11.22898  -10.177257] [-5.1958175 -6.8387203 -8.529881 ]
+				cifar10_wrn_baseline_0.1_1000_40_1_10000
+  FPR95 AUROC AUPR
+& 62.39 & 87.60 & 97.06
+& 0.92 & 0.29 & 0.09
+
+
+Mean Test Results!!!!!
+				cifar10_wrn_baseline_0.1_1000_40_1_10000
+  FPR95 AUROC AUPR
+& 61.30 & 87.21 & 96.67

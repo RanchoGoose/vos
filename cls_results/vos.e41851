@@ -1,0 +1,10 @@
+Conda uses environments to load different sets of Python packages
+type conda env list to see the environments availible.
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 2 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Traceback (most recent call last):
+  File "/data/coq20tz/vos/classification/CIFAR/test.py", line 209, in <module>
+    in_score, right_score, wrong_score = get_ood_scores(test_loader, in_dist=True)
+  File "/data/coq20tz/vos/classification/CIFAR/test.py", line 146, in get_ood_scores
+    output += net(data)/args.dropout_runs
+UnboundLocalError: local variable 'output' referenced before assignment

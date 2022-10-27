@@ -1,0 +1,1 @@
+Namespace(test_bs=200, num_to_avg=10, validate=False, use_xent=False, method_name='cifar10_wrn_baseline_0.1_1000_40_1_10000_epoch_99', layers=40, widen_factor=2, droprate=0.3, load='./snapshots', ngpu=1, prefetch=2, out_as_pos=False, score='energy', T=1.0, noise=0, model_name='res')

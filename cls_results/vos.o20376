@@ -1,0 +1,20 @@
+Namespace(test_bs=200, num_to_avg=10, validate=False, use_xent=False, method_name='cifar10_wrn_baseline_0.1_1000_40_1_10000', layers=40, widen_factor=2, droprate=0.3, load='./snapshots/dropout', ngpu=1, prefetch=2, out_as_pos=False, score='energy', T=1.0, noise=0, model_name='res')
+Model restored! Epoch: 99
+Error Rate 5.09
+
+Using CIFAR-10 as typical data
+
+
+Error Detection
+			cifar10_wrn_baseline_0.1_1000_40_1_10000
+FPR95:			24.97
+AUROC:			93.10
+AUPR:			41.22
+
+
+Texture Detection
+[-13.525517 -13.556132 -12.343861] [-5.419677  -8.769382  -7.0260787]
+				cifar10_wrn_baseline_0.1_1000_40_1_10000
+  FPR95 AUROC AUPR
+& 45.58 & 87.14 & 95.64
+& 1.05 & 0.43 & 0.21

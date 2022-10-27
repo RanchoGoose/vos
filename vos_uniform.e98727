@@ -1,0 +1,26 @@
+Conda uses environments to load different sets of Python packages
+type conda env list to see the environments availible.
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Traceback (most recent call last):
+  File "/data/coq20tz/vos/classification/CIFAR/train_virtual_dropout.py", line 335, in <module>
+    train(epoch)
+  File "/data/coq20tz/vos/classification/CIFAR/train_virtual_dropout.py", line 193, in train
+    x, output = net.forward_virtual(data)
+  File "/data/coq20tz/vos/classification/CIFAR/models/wrn_virtual_dropout.py", line 142, in forward_virtual
+    out = self.block1(out)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/coq20tz/vos/classification/CIFAR/models/wrn_virtual_dropout.py", line 95, in forward
+    return self.layer(x)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/nn/modules/container.py", line 141, in forward
+    input = module(input)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/coq20tz/vos/classification/CIFAR/models/wrn_virtual_dropout.py", line 75, in forward
+    out = self.dropout_layer.apply(out)
+  File "/data/coq20tz/vos/classification/CIFAR/models/dropout_methods/uniform_dropout.py", line 19, in forward
+    if self.inplace:
+AttributeError: 'UniformDropoutBackward' object has no attribute 'inplace'

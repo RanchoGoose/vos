@@ -1,0 +1,45 @@
+Conda uses environments to load different sets of Python packages
+type conda env list to see the environments availible.
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 2 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/torch/utils/data/dataloader.py:487: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Traceback (most recent call last):
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/scipy/io/matlab/_mio.py", line 39, in _open_file
+    return open(file_like, mode), True
+FileNotFoundError: [Errno 2] No such file or directory: '/fastdata/coq20tz/dataset/SVHN/test_32x32.mat'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/coq20tz/vos/classification/CIFAR/test.py", line 255, in <module>
+    ood_data = svhn.SVHN(root='/fastdata/coq20tz/dataset/SVHN/', split="test",
+  File "/data/coq20tz/vos/classification/utils/svhn_loader.py", line 52, in __init__
+    loaded_mat = sio.loadmat(os.path.join(root, self.filename))
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/scipy/io/matlab/_mio.py", line 224, in loadmat
+    with _open_file_context(file_name, appendmat) as f:
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/scipy/io/matlab/_mio.py", line 17, in _open_file_context
+    f, opened = _open_file(file_like, appendmat, mode)
+  File "/data/coq20tz/anaconda/.envs/detectron2/lib/python3.10/site-packages/scipy/io/matlab/_mio.py", line 45, in _open_file
+    return open(file_like, mode), True
+FileNotFoundError: [Errno 2] No such file or directory: '/fastdata/coq20tz/dataset/SVHN/test_32x32.mat'

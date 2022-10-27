@@ -11,7 +11,7 @@ import torchvision.datasets as dset
 import torch.nn.functional as F
 # from models.wrn import WideResNet
 # from models.densenet import DenseNet3
-from models.wrn_virtual import WideResNet
+from models.wrn_virtual_dropout import WideResNet
 from models.densenet import DenseNet3
 from skimage.filters import gaussian as gblur
 from PIL import Image as PILImage
@@ -39,7 +39,9 @@ parser.add_argument('--method_name', '-m', type=str, default='cifar10_allconv_ba
 parser.add_argument('--layers', default=40, type=int, help='total number of layers')
 parser.add_argument('--widen-factor', default=2, type=int, help='widen factor')
 parser.add_argument('--droprate', default=0.3, type=float, help='dropout probability')
-parser.add_argument('--load', '-l', type=str, default='./snapshots', help='Checkpoint path to resume / test.')
+parser.add_argument('--MC_dropout_enabled', default='true', type=str)
+parser.add_argument('--dropout_runs', default=10, type=int)
+parser.add_argument('--load', '-l', type=str, default='./snapshots/baseline', help='Checkpoint path to resume / test.')
 parser.add_argument('--ngpu', type=int, default=1, help='0 = CPU.')
 parser.add_argument('--prefetch', type=int, default=2, help='Pre-fetching threads.')
 # EG and benchmark details
@@ -48,6 +50,7 @@ parser.add_argument('--score', default='MSP', type=str, help='score options: MSP
 parser.add_argument('--T', default=1., type=float, help='temperature: energy|Odin')
 parser.add_argument('--noise', type=float, default=0, help='noise for Odin')
 parser.add_argument('--model_name', default='res', type=str)
+
 
 args = parser.parse_args()
 print(args)
@@ -61,10 +64,10 @@ std = [x / 255 for x in [63.0, 62.1, 66.7]]
 test_transform = trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)])
 
 if 'cifar10_' in args.method_name:
-    test_data = dset.CIFAR10('/nobackup-slow/dataset/cifarpy', train=False, transform=test_transform)
+    test_data = dset.CIFAR10('/data/coq20tz/CIFAR', train=False, transform=test_transform)
     num_classes = 10
 else:
-    test_data = dset.CIFAR100('/nobackup-slow/dataset/cifarpy', train=False, transform=test_transform)
+    test_data = dset.CIFAR100('/data/coq20tz/CIFAR', train=False, transform=test_transform)
     num_classes = 100
 
 
@@ -93,7 +96,8 @@ if args.load != '':
         else:
             subdir = 'oe_scratch'
         
-        model_name = os.path.join(os.path.join(args.load, subdir), args.method_name + '_epoch_' + str(i) + '.pt')
+        model_name = os.path.join(os.path.join(args.load), args.method_name + '_epoch_' + str(i) + '.pt')
+        # model_name = os.path.join(os.path.join(args.load, subdir), args.method_name + '_epoch_' + str(i) + '.pt')
         # model_name = os.path.join(os.path.join(args.load, subdir), args.method_name + '.pt')
         if os.path.isfile(model_name):
             net.load_state_dict(torch.load(model_name))
@@ -134,8 +138,14 @@ def get_ood_scores(loader, in_dist=False):
                 break
 
             data = data.cuda()
-
-            output = net(data)
+            output = 0
+            # MC dopout multiple runs
+            if args.MC_dropout_enabled == 'true':
+                net.train()
+                for i in range(args.dropout_runs):
+                    output += net(data)/args.dropout_runs
+         
+            # output = net(data)            
             smax = to_np(F.softmax(output, dim=1))
 
             if args.use_xent:
@@ -172,9 +182,9 @@ elif args.score == 'M':
 
 
     if 'cifar10_' in args.method_name:
-        train_data = dset.CIFAR10('/nobackup-slow/dataset/cifarpy', train=True, transform=test_transform)
+        train_data = dset.CIFAR10('/data/coq20tz/CIFAR', train=True, transform=test_transform)
     else:
-        train_data = dset.CIFAR100('/nobackup-slow/dataset/cifarpy', train=True, transform=test_transform)
+        train_data = dset.CIFAR100('/data/coq20tz/CIFAR', train=True, transform=test_transform)
 
     train_loader = torch.utils.data.DataLoader(train_data, batch_size=args.test_bs, shuffle=False, 
                                           num_workers=args.prefetch, pin_memory=True)
@@ -242,7 +252,7 @@ def get_and_print_results(ood_loader, num_to_avg=args.num_to_avg):
 
 
 # /////////////// Textures ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/dtd/images",
+ood_data = dset.ImageFolder(root="/data/coq20tz/dataset/dtd/images",
                             transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
                                                    trn.ToTensor(), trn.Normalize(mean, std)]))
 ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
@@ -251,7 +261,7 @@ print('\n\nTexture Detection')
 get_and_print_results(ood_loader)
 
 # /////////////// SVHN /////////////// # cropped and no sampling of the test set
-ood_data = svhn.SVHN(root='/nobackup-slow/dataset/svhn/', split="test",
+ood_data = svhn.SVHN(root='/fastdata/coq20tz/dataset/SVHN/test/', split="test",
                      transform=trn.Compose(
                          [#trn.Resize(32),
                          trn.ToTensor(), trn.Normalize(mean, std)]), download=False)
@@ -261,7 +271,7 @@ print('\n\nSVHN Detection')
 get_and_print_results(ood_loader)
 
 # /////////////// Places365 ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/places365/",
+ood_data = dset.ImageFolder(root="/fastdata/coq20tz/dataset/places365/",
                             transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
                                                    trn.ToTensor(), trn.Normalize(mean, std)]))
 ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
@@ -269,29 +279,29 @@ ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuf
 print('\n\nPlaces365 Detection')
 get_and_print_results(ood_loader)
 
-# /////////////// LSUN-C ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/LSUN_C",
-                            transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
-ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
-                                         num_workers=1, pin_memory=True)
-print('\n\nLSUN_C Detection')
-get_and_print_results(ood_loader)
+# # /////////////// LSUN-C ///////////////
+# ood_data = dset.ImageFolder(root="/fastdata/coq20tz/dataset/LSUN/lsun-master/",
+#                             transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+#                                          num_workers=1, pin_memory=True)
+# print('\n\nLSUN_C Detection')
+# get_and_print_results(ood_loader)
 
-# /////////////// LSUN-R ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/LSUN_resize",
-                            transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
-ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
-                                         num_workers=1, pin_memory=True)
-print('\n\nLSUN_Resize Detection')
-get_and_print_results(ood_loader)
+# # /////////////// LSUN-R ///////////////
+# ood_data = dset.ImageFolder(root="/fastdata/coq20tz/dataset/LSUN_resize",
+#                             transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+#                                          num_workers=1, pin_memory=True)
+# print('\n\nLSUN_Resize Detection')
+# get_and_print_results(ood_loader)
 
 # /////////////// iSUN ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/iSUN",
-                            transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
-ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
-                                         num_workers=1, pin_memory=True)
-print('\n\niSUN Detection')
-get_and_print_results(ood_loader)
+# ood_data = dset.ImageFolder(root="/data/coq20tz/dataset/iSUN",
+#                             transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+#                                          num_workers=1, pin_memory=True)
+# print('\n\niSUN Detection')
+# get_and_print_results(ood_loader)
 
 # /////////////// Mean Results ///////////////
 
@@ -300,21 +310,21 @@ print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), metho
 
 
 # /////////////// CIFAR-100 ///////////////
-ood_data = dset.CIFAR100('/nobackup-slow/dataset/cifarpy', train=False,
-                          transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
-ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
-                                         num_workers=1, pin_memory=True)
-print('\n\nCIFAR-100 Detection')
-get_and_print_results(ood_loader)
+# ood_data = dset.CIFAR100('/data/coq20tz/CIFAR', train=False,
+#                           transform=trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)]))
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+#                                          num_workers=1, pin_memory=True)
+# print('\n\nCIFAR-100 Detection')
+# get_and_print_results(ood_loader)
 
-# /////////////// celeba ///////////////
-ood_data = dset.ImageFolder(root="/nobackup-slow/dataset/celeba",
-                            transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
-                                trn.ToTensor(), trn.Normalize((.5, .5, .5), (.5, .5, .5))]))
-ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
-                                         num_workers=1, pin_memory=True)
-print('\n\nceleba Detection')
-get_and_print_results(ood_loader)
+# # /////////////// celeba ///////////////
+# ood_data = dset.ImageFolder(root="/data/coq20tz/dataset/celeba",
+#                             transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
+#                                 trn.ToTensor(), trn.Normalize((.5, .5, .5), (.5, .5, .5))]))
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+#                                          num_workers=1, pin_memory=True)
+# print('\n\nceleba Detection')
+# get_and_print_results(ood_loader)
 
 
 # /////////////// OOD Detection of Validation Distributions ///////////////
@@ -324,7 +334,7 @@ if args.validate is False:
 
 auroc_list, aupr_list, fpr_list = [], [], []
 
-# /////////////// Uniform Noise ///////////////
+# ////////////// Uniform Noise ////////////////
 
 dummy_targets = torch.ones(ood_num_examples * args.num_to_avg)
 ood_data = torch.from_numpy(
@@ -340,9 +350,9 @@ get_and_print_results(ood_loader)
 # /////////////// Arithmetic Mean of Images ///////////////
 
 if 'cifar10_' in args.method_name:
-    ood_data = dset.CIFAR100('/nobackup-slow/dataset/cifarpy', train=False, transform=test_transform)
+    ood_data = dset.CIFAR100('/data/coq20tz/CIFAR', train=False, transform=test_transform)
 else:
-    ood_data = dset.CIFAR10('/nobackup-slow/dataset/cifarpy', train=False, transform=test_transform)
+    ood_data = dset.CIFAR10('/data/coq20tz/CIFAR', train=False, transform=test_transform)
 
 
 class AvgOfPair(torch.utils.data.Dataset):
@@ -373,9 +383,9 @@ get_and_print_results(ood_loader)
 # /////////////// Geometric Mean of Images ///////////////
 
 if 'cifar10_' in args.method_name:
-    ood_data = dset.CIFAR100('/nobackup-slow/dataset/cifarpy', train=False, transform=trn.ToTensor())
+    ood_data = dset.CIFAR100('/data/coq20tz/CIFARy', train=False, transform=trn.ToTensor())
 else:
-    ood_data = dset.CIFAR10('/nobackup-slow/dataset/cifarpy', train=False, transform=trn.ToTensor())
+    ood_data = dset.CIFAR10('/data/coq20tz/CIFAR', train=False, transform=trn.ToTensor())
 
 
 class GeomMeanOfPair(torch.utils.data.Dataset):
